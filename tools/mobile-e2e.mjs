@@ -70,6 +70,8 @@ for (const [name, engine] of PHONES) {
     await layout('listing');
     await tap('.grid .card');
     await layout('product page');
+    const usPrice = await page.locator('.price').textContent();
+    check('US price in rupees with approximate dollars', /^Rs [\d,]+\s*≈ \$\d/.test(usPrice.trim()), usPrice.trim());
     await shot('2-product');
     const addBtn = page.locator('[data-main-add]');
     check('button asks for a size first', (await addBtn.textContent()) === 'Choose a size');

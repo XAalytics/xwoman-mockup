@@ -45,24 +45,21 @@
   const byId = (id) => PRODUCTS.find((p) => p.id === id);
   const region = () => REGIONS[state.region];
 
+  // Market price in PKR (a Shopify market price adjustment): international margin, plus duties in DDP markets.
   function priceIn(pricePkr, code = state.region) {
     const r = REGIONS[code];
-    if (r.currency === 'PKR') return pricePkr;
-    const usd = pricePkr / PRICING.fx;
-    const landed = usd * (1 + PRICING.fxBuffer) * (1 + PRICING.markup) + (r.ddp ? usd * r.duty : 0);
-    return Math.ceil((landed + 1) / 10) * 10 - 1; // charm price ending in 9
+    if (code === 'PK') return pricePkr;
+    const factor = (1 + PRICING.fxBuffer) * (1 + PRICING.markup) + (r.ddp ? r.duty : 0);
+    return Math.ceil((pricePkr * factor) / 500) * 500 - 10; // e.g. Rs 24,990
   }
   const price = (p) => priceIn(p.pricePkr);
-  function money(amount, code = state.region) {
-    return REGIONS[code].currency === 'PKR'
-      ? `Rs ${Math.round(amount).toLocaleString('en-PK')}`
-      : `$${Math.round(amount).toLocaleString('en-US')}`;
-  }
-  function approx(amount) {
-    const r = region();
+  // Everything is charged in PKR; outside Pakistan an approximate local amount is shown next to it.
+  const money = (amount) => `Rs ${Math.round(amount).toLocaleString('en-PK')}`;
+  function approx(amount, code = state.region) {
+    const r = REGIONS[code];
     if (!r.local) return '';
     const [sym, rate] = r.local;
-    return `≈ ${sym}${Math.round(amount * rate).toLocaleString('en-GB')}`;
+    return `≈ ${sym}${Math.round((amount / PRICING.fx) * rate).toLocaleString('en-GB')}`;
   }
 
   function dispatchDays(p) {
@@ -373,7 +370,7 @@
   function deliveryText() {
     const r = region();
     if (state.region === 'PK') return `Delivered by ${r.carrier} in ${r.transit[0]}–${r.transit[1]} days after dispatch. Delivery is ${money(r.ship)}, free over ${money(r.freeOver)}. Cash on delivery is available on orders up to ${money(PRICING.codCap)}.`;
-    const base = `Shipped from our Lahore hub with ${r.carrier}, ${r.transit[0]}–${r.transit[1]} working days after dispatch. Delivery is ${money(r.ship)}, free over ${money(r.freeOver)}. You pay in US dollars.`;
+    const base = `Shipped from our Lahore hub with ${r.carrier}, ${r.transit[0]}–${r.transit[1]} working days after dispatch. Delivery is ${money(r.ship)}, free over ${money(r.freeOver)}. You pay in Pakistani rupees; your bank converts the amount.`;
     return r.ddp
       ? `${base} Duties and taxes for ${r.name} are already included in the price. The courier won't ask you for anything at the door.`
       : `${base} Duties and taxes aren't included for your country. The courier may collect them on delivery.`;
@@ -406,7 +403,7 @@
       <div><span>Delivery<span class="note">${t.shipping ? `Free over ${money(r.freeOver)}` : ''}</span></span><span>${t.shipping ? money(t.shipping) : 'Free'}</span></div>
       <div><span>Duties and taxes</span><span>${state.region === 'PK' ? 'None' : r.ddp ? 'Included' : 'Payable on delivery'}</span></div>
       <div class="grand"><span>Total</span><span>${money(t.total)}</span></div>
-      ${r.currency === 'USD' ? `<span class="note">You'll be charged in US dollars${approx(t.total) ? ` (${approx(t.total)})` : ''}.</span>` : ''}
+      ${state.region !== 'PK' ? `<span class="note">You'll be charged in Pakistani rupees (PKR); your bank converts it (${approx(t.total)}).</span>` : ''}
     </div>`;
   }
   function cartLines(editable = true) {
@@ -558,7 +555,7 @@
     openSheet({
       title: 'Secure card payment',
       body: `<div class="pay-card">
-        <div class="pay-brand"><span>XWoman · ${money(t.total)}</span><span>3-D Secure</span></div>
+        <div class="pay-brand"><span>XWoman · ${money(t.total)}${state.region !== 'PK' ? ` (${approx(t.total)})` : ''}</span><span>3-D Secure</span></div>
         <p class="duty ddu" style="margin:0">${icons.info}<span>This is a mockup. The card below is a test card; don't enter your real card details.</span></p>
         <div class="field"><label for="c-num">Card number</label><input id="c-num" value="4242 4242 4242 4242" inputmode="numeric" autocomplete="off"></div>
         <div class="row2"><div class="field"><label for="c-exp">Expiry</label><input id="c-exp" value="12 / 28" autocomplete="off"></div><div class="field"><label for="c-cvc">Security code</label><input id="c-cvc" value="123" autocomplete="off"></div></div>
@@ -661,7 +658,7 @@
         <li class="now"><span class="dot"></span><strong>Being prepared by ${esc(DESIGNERS[p.designer].name)}</strong><span>We'll let you know when it reaches our hub</span></li>
         <li><span class="dot"></span><strong>Quality check at our Lahore hub</strong><span>We'll email you a photo of your piece before it ships</span></li>
         <li><span class="dot"></span><strong>On its way with ${r.carrier}</strong><span>You'll get a tracking link by email</span></li>
-        <li><span class="dot"></span><strong>Delivered</strong><span>Expected around ${eta}${r.ddp && r.currency === 'USD' ? ', with nothing to pay at the door' : ''}</span></li>
+        <li><span class="dot"></span><strong>Delivered</strong><span>Expected around ${eta}${r.ddp && r.short !== 'PK' ? ', with nothing to pay at the door' : ''}</span></li>
       </ol>`;
   }
 
@@ -719,7 +716,7 @@
       body: `<p class="muted small" style="margin-top:0">Prices, delivery times and duties update for your country.</p>
         <div class="region-list">${Object.entries(REGIONS).map(([code, r]) =>
           `<button class="region-opt" type="button" data-region="${code}" aria-pressed="${code === state.region}">
-            <span class="flag">${r.short}</span><span>${r.name}<small>${code === 'PK' ? 'Pay in PKR, cash on delivery' : r.ddp ? 'Duties included · pay in USD' : 'Duties payable on delivery · pay in USD'}</small></span><span>${r.currency}</span>
+            <span class="flag">${r.short}</span><span>${r.name}<small>${code === 'PK' ? 'Pay in PKR, cash on delivery' : r.ddp ? 'Duties included · pay in PKR' : 'Duties payable on delivery · pay in PKR'}</small></span><span>${r.currency}</span>
           </button>`).join('')}</div>`,
       onMount(sheet) {
         $$('[data-region]', sheet).forEach((b) => b.addEventListener('click', () => {
@@ -863,7 +860,7 @@
     else if (parts[0] === 'checkout') viewCheckout();
     else if (parts[0] === 'confirmed') viewConfirmed();
     else if (parts[0] === 'track') viewTrack(params);
-    else if (parts[0] === 'admin' && window.XWAdmin) { state.screen = 'Admin chat'; window.XWAdmin.render({ store, money, priceIn, esc, toast }); }
+    else if (parts[0] === 'admin' && window.XWAdmin) { state.screen = 'Admin chat'; window.XWAdmin.render({ store, money, priceIn, approx, esc, toast }); }
     else viewNotFound();
     lastPath = path;
     document.body.classList.toggle('admin-mode', parts[0] === 'admin');

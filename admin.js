@@ -185,7 +185,7 @@
   function priceRows(pkr) {
     return Object.entries(REGIONS).map(([code, r]) => {
       const v = api.priceIn(pkr, code);
-      const local = r.local ? ` <span class="muted">≈ ${r.local[0]}${Math.round(v * r.local[1]).toLocaleString('en-GB')}</span>` : '';
+      const local = r.local ? ` <span class="muted">${api.approx(v, code)}</span>` : '';
       return `<tr><th scope="row">${r.name}</th><td>${api.money(v, code)}${local}${r.ddp && code !== 'PK' ? ' <span class="muted">duties incl.</span>' : ''}</td></tr>`;
     }).join('');
   }
@@ -213,7 +213,7 @@
         <div><dt>Leaves hub</dt><dd>${d0}–${d1} days</dd></div>
       </dl>
       <p class="draft-typed">You typed: <strong>Rs ${draft.pricePkr.toLocaleString('en-PK')}</strong></p>
-      <table class="draft-prices"><caption>Prices by country</caption><tbody>${priceRows(draft.pricePkr)}</tbody></table>
+      <table class="draft-prices"><caption>Prices by country (charged in PKR)</caption><tbody>${priceRows(draft.pricePkr)}</tbody></table>
       ${warn}
       ${mode === 'published' ? '<p class="draft-done">Published ✓</p>' : `<div class="draft-actions">
         <button class="btn" type="button" data-draft="approve">Approve and publish</button>

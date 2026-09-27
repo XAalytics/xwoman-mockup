@@ -9,7 +9,7 @@ It is a static site (HTML, CSS, vanilla JavaScript): no build step, no backend. 
 ## What testers can try
 
 - Home, category listings with filters and sorting, product pages (gallery, size guide, pieces and fabric, dispatch and delivery dates)
-- Switching the delivery country (Pakistan, US, UK, Canada, Australia, UAE & Gulf, rest of world) to see prices in PKR or USD, duties-included vs payable-on-delivery messages, and cash on delivery for Pakistan
+- Switching the delivery country (Pakistan, US, UK, Canada, Australia, UAE & Gulf, rest of world) to see each market's price, duties-included vs payable-on-delivery messages, and cash on delivery for Pakistan. As on the planned Shopify Basic store, everything is charged in PKR with an approximate local amount shown (e.g. `Rs 73,490 ≈ $262`)
 - Bag, single-page guest checkout (no account), simulated card payment, order confirmation, and order tracking by order number + email
 - **Share feedback** (floating button) opens WhatsApp with a short prefilled question list and the screen the tester was on
 
@@ -58,13 +58,13 @@ BASE=http://127.0.0.1:8765/ npm run e2e
 npm run e2e                          # against the live site
 ```
 
-93 checks across 9 journeys: admin chat, browse, filter, sort, product page, bag, sticky bar, card and cash-on-delivery checkout, confirmation, tracking, region switch, feedback, and blocked browser storage.
+96 checks across 9 journeys: admin chat, browse, filter, sort, product page, bag, sticky bar, card and cash-on-delivery checkout, confirmation, tracking, region switch, feedback, and blocked browser storage.
 
 Phones (iPhone and Android):
 
 ```bash
 npx playwright install webkit        # once: WebKit is the engine behind every iPhone browser
-npm run e2e:mobile                   # iPhone SE / 15 / 15 Pro Max (WebKit) and Pixel 7 / Galaxy S24 (Chrome); 225 checks incl. the admin chat
+npm run e2e:mobile                   # iPhone SE / 15 / 15 Pro Max (WebKit) and Pixel 7 / Galaxy S24 (Chrome); 230 checks incl. the admin chat
 ```
 
 Real touch taps through the full journey, plus layout checks on every screen: no sideways scrolling, touch targets of at least 44px, form fields of at least 16px (so iOS doesn't zoom), Checkout and Pay buttons fully on screen, sticky bar and feedback button placement, and the home-screen app manifest and icons.

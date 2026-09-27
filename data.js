@@ -104,15 +104,17 @@ const PRODUCTS = [
   },
 ];
 
-// Regions: DDP regions include an illustrative duty estimate in the price.
+// Regions = Shopify markets. Store currency is PKR (Shopify Basic without Shopify Payments charges one currency, and
+// Safepay's Shopify integration charges PKR), so every price and charge is in rupees; `local` is an approximate
+// display only ([symbol, units per USD]). DDP markets include an illustrative duty estimate in the market price.
 const REGIONS = {
   PK: { name: 'Pakistan', short: 'PK', currency: 'PKR', ddp: true, ship: 300, freeOver: 10000, transit: [2, 4], carrier: 'TCS', cod: true },
-  US: { name: 'United States', short: 'US', currency: 'USD', ddp: true, duty: 0.26, ship: 25, freeOver: 200, transit: [4, 6], carrier: 'DHL Express' },
-  UK: { name: 'United Kingdom', short: 'UK', currency: 'USD', ddp: true, duty: 0.32, ship: 19, freeOver: 200, transit: [3, 5], carrier: 'DHL Express', local: ['£', 0.79] },
-  CA: { name: 'Canada', short: 'CA', currency: 'USD', ddp: true, duty: 0.30, ship: 25, freeOver: 200, transit: [4, 6], carrier: 'DHL Express', local: ['C$', 1.37] },
-  AU: { name: 'Australia', short: 'AU', currency: 'USD', ddp: true, duty: 0.15, ship: 25, freeOver: 250, transit: [5, 7], carrier: 'DHL Express', local: ['A$', 1.52] },
-  AE: { name: 'UAE & Gulf', short: 'UAE', currency: 'USD', ddp: true, duty: 0.10, ship: 15, freeOver: 150, transit: [3, 4], carrier: 'DHL Express', local: ['AED ', 3.67] },
-  ROW: { name: 'Rest of world', short: 'Intl', currency: 'USD', ddp: false, duty: 0, ship: 29, freeOver: 300, transit: [5, 9], carrier: 'DHL Express' },
+  US: { name: 'United States', short: 'US', currency: 'PKR', ddp: true, duty: 0.26, ship: 7000, freeOver: 56000, transit: [4, 6], carrier: 'DHL Express', local: ['$', 1] },
+  UK: { name: 'United Kingdom', short: 'UK', currency: 'PKR', ddp: true, duty: 0.32, ship: 5300, freeOver: 56000, transit: [3, 5], carrier: 'DHL Express', local: ['£', 0.79] },
+  CA: { name: 'Canada', short: 'CA', currency: 'PKR', ddp: true, duty: 0.30, ship: 7000, freeOver: 56000, transit: [4, 6], carrier: 'DHL Express', local: ['C$', 1.37] },
+  AU: { name: 'Australia', short: 'AU', currency: 'PKR', ddp: true, duty: 0.15, ship: 7000, freeOver: 70000, transit: [5, 7], carrier: 'DHL Express', local: ['A$', 1.52] },
+  AE: { name: 'UAE & Gulf', short: 'UAE', currency: 'PKR', ddp: true, duty: 0.10, ship: 4200, freeOver: 42000, transit: [3, 4], carrier: 'DHL Express', local: ['AED ', 3.67] },
+  ROW: { name: 'Rest of world', short: 'Intl', currency: 'PKR', ddp: false, duty: 0, ship: 8100, freeOver: 84000, transit: [5, 9], carrier: 'DHL Express', local: ['$', 1] },
 };
 
 const PRICING = { fx: 280, fxBuffer: 0.03, markup: 0.6, codCap: 50000, hubDays: 2 };

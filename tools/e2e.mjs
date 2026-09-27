@@ -108,6 +108,8 @@ await session('Browse, filter and sort (desktop)', DESKTOP, async (t) => {
 await session('Product page and bag (desktop)', DESKTOP, async (t) => {
   await t.go('#/p/p04');
   t.check('duty message for UK', (await t.text('.duty')).includes('Duties and taxes included'));
+  const ukPrice = await t.text('.price');
+  t.check('UK price charged in rupees with approximate pounds shown', /^Rs [\d,]+\s*≈ £\d/.test(ukPrice), ukPrice);
   t.check('button asks for a size before one is chosen', (await t.text('[data-main-add]')) === 'Choose a size');
   await t.click('[data-main-add]');
   t.check('clicking without a size highlights the sizes', await t.page.$eval('.sizes', (el) => el.classList.contains('needs-size')));
@@ -159,6 +161,8 @@ await session('Card checkout, confirmation and tracking (phone, UK)', PHONE, asy
   await t.click('[data-main-add]');
   await t.click('.sheet-foot a[href="#/checkout"]');
   t.check('checkout page opens', (await t.text('.checkout h1')) === 'Checkout');
+  t.check('checkout says the charge is in PKR', (await t.text('.summary')).includes("You'll be charged in Pakistani rupees (PKR)"));
+  t.check('pay button shows a rupee amount', (await t.text('[data-submit]')).startsWith('Pay Rs '));
   t.check('no sideways scrolling', await t.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   t.check('cash on delivery disabled outside Pakistan', await t.page.$eval('input[value="cod"]', (i) => i.disabled));
   await t.click('[data-submit]');
@@ -262,7 +266,7 @@ await session('Admin chat: photo + price + category, approve, publish (desktop)'
   t.check('draft card shown', await t.visible('.draft'));
   t.check('card echoes the typed price', (await t.text('.draft-typed')).includes('Rs 12,500'));
   const rows = await t.page.$$eval('.draft-prices tr', (trs) => trs.map((tr) => tr.textContent));
-  t.check('regional prices listed (7 regions)', rows.length === 7 && rows[0].includes('Rs 12,500') && rows.slice(1).every((r) => r.includes('$')), rows.join(' | '));
+  t.check('regional prices listed in PKR (7 markets)', rows.length === 7 && rows[0].includes('Rs 12,500') && rows.every((r) => r.includes('Rs ')) && rows.slice(1).every((r) => r.includes('≈')), rows.join(' | '));
   const title = await t.text('.draft-title');
   await t.click('[data-draft="approve"]');
   t.check('publish confirmed', (await t.text('[data-chat-log]')).includes('Published in Formals'));
