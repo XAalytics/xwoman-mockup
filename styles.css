@@ -424,7 +424,6 @@ details > div { padding: 0 0 1rem; color: var(--ink-soft); font-size: .9375rem; 
 .footer-grid ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
 .footer-grid button, .footer-grid a { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; font-size: .9375rem; color: var(--ink-soft); text-align: left; }
 .footer-grid button:hover, .footer-grid a:hover { color: var(--kattha); }
-.fine { margin-top: 2rem; font-size: .8125rem; color: var(--ink-soft); }
 
 /* ---------- Feedback button & toast ---------- */
 .feedback-fab {
