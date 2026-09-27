@@ -1,0 +1,12 @@
+{
+  "name": "xwoman-mockup",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "python -m http.server 8765",
+    "e2e": "node tools/e2e.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
+}

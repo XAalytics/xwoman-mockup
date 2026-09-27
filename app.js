@@ -3,9 +3,18 @@
   'use strict';
 
   // ---------- State ----------
+  // Private modes, embedded viewers and some in-app browsers block localStorage. Keep an in-memory copy so the
+  // bag, region and last order still work for the visit; localStorage only adds persistence when available.
+  const memory = new Map();
   const store = {
-    get(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } },
-    set(key, value) { localStorage.setItem(key, JSON.stringify(value)); },
+    get(key, fallback) {
+      if (memory.has(key)) return memory.get(key);
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+    },
+    set(key, value) {
+      memory.set(key, value);
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
+    },
   };
   const state = {
     region: store.get('xw-region', guessRegion()),
@@ -294,7 +303,7 @@
               <span class="muted">Arrives in ${r.name} around ${deliveryRange(p)} with ${r.carrier}</span>
             </div>
             <div class="pdp-actions">
-              <button class="btn btn-block" type="button" data-action="add" data-main-add>Add to bag</button>
+              <button class="btn btn-block" type="button" data-action="add" data-main-add>${unstitched ? 'Add to bag' : 'Choose a size'}</button>
               <button class="btn btn-ghost btn-block" type="button" data-action="ask">Ask about this piece on WhatsApp</button>
             </div>
             <table class="pieces"><caption class="sr-only">Pieces and fabric</caption><tbody>
@@ -313,7 +322,7 @@
       </div>
       <div class="sticky-bar" aria-hidden="true">
         <span class="sb-price">${money(pr)}</span>
-        <button class="btn" type="button" data-action="add" tabindex="-1">Add to bag</button>
+        <button class="btn" type="button" data-action="add" tabindex="-1">${unstitched ? 'Add to bag' : 'Choose a size'}</button>
       </div>`;
 
     let chosen = unstitched ? p.sizes[0] : null;
@@ -321,6 +330,8 @@
       chosen = b.dataset.size;
       $$('.size').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       $('[data-size-error]').hidden = true;
+      $('.sizes').classList.remove('needs-size');
+      $$('[data-action="add"]').forEach((x) => { x.textContent = 'Add to bag'; });
     }));
     $$('[data-thumb]').forEach((b) => b.addEventListener('click', () => {
       $('.gallery-main').innerHTML = productImg(p, Number(b.dataset.thumb), { eager: true });
@@ -329,8 +340,11 @@
     $$('[data-action="add"]').forEach((b) => b.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!chosen) {
+        // Make the missing step obvious: outline the sizes, show the message and move focus there.
         $('[data-size-error]').hidden = false;
+        $('.sizes').classList.add('needs-size');
         $('.sizes').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $('.size').focus({ preventScroll: true });
         return;
       }
       addToCart(p.id, chosen);

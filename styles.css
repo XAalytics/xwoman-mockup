@@ -258,7 +258,10 @@ h3 { font-size: 1.25rem; }
   border: 1px solid var(--mist); background: var(--paper); border-radius: var(--radius);
 }
 .size[aria-pressed='true'] { border-color: var(--ink); background: var(--ink); color: #fff; }
-.size-error { color: var(--kattha); font-size: .875rem; margin: .5rem 0 0; }
+.size-error { color: var(--kattha); font-size: .9375rem; font-weight: 500; margin: .5rem 0 0; }
+.sizes.needs-size .size { border-color: var(--kattha); box-shadow: 0 0 0 1px var(--kattha); }
+@media (prefers-reduced-motion: no-preference) { .sizes.needs-size { animation: nudge .35s ease; } }
+@keyframes nudge { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .dispatch { display: grid; gap: .15rem; font-size: .9375rem; }
 .dispatch strong { font-weight: 500; }
 .pdp-actions { display: grid; gap: .5rem; }
