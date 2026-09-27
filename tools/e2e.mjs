@@ -232,5 +232,82 @@ await session('Bag works when browser storage is blocked (phone)', PHONE, async 
   t.check('bag count shows 1 without storage', (await t.bag()) === 1);
 }, { blockStorage: true });
 
+await session('Admin chat: photo + price + category, approve, publish (desktop)', DESKTOP, async (t) => {
+  const photo = path.resolve('img/p05.webp');
+  await t.go('#/admin');
+  t.check('admin asks for a PIN', await t.visible('[data-pin]'));
+  await t.page.type('#pin', '1111');
+  await t.click('[data-pin] .btn');
+  t.check('wrong PIN is refused', await t.visible('[data-pin-err]'));
+  await t.page.$eval('#pin', (i) => { i.value = ''; });
+  await t.page.type('#pin', '2026');
+  await t.click('[data-pin] .btn');
+  t.check('correct PIN opens the chat', (await t.visible('[data-chat-log]')) && (await t.visible('.composer')));
+  t.check('store footer hidden in admin', !(await t.visible('.site-footer')));
+  const parse = await t.page.evaluate(() => ['Rs 12,500', '12.5k', '12500/-', 'PKR 9,990', 'Rs 12,500 3 pc 2.5 m', 'Rs 5000 or 6000']
+    .map((s) => { const r = window.XWAdmin.parsePkr(s); return r?.value ?? (r?.ambiguous ? 'ambiguous' : null); }));
+  t.check("price reading from the admin's words", JSON.stringify(parse) === JSON.stringify([12500, 12500, 12500, 9990, 12500, 'ambiguous']), JSON.stringify(parse));
+
+  // Path 1: photo first, then price + category in one message
+  await (await t.page.$('[data-file]')).uploadFile(photo);
+  await t.page.waitForFunction(() => document.querySelector('[data-chat-log]').textContent.includes('What is the price'), { timeout: 8000 });
+  t.check('photo processed and colour detected', await t.page.$eval('[data-chat-log]', (el) => /It looks \w+/.test(el.textContent)));
+  await t.page.type('[data-text]', 'Rs 12,500 formals');
+  await t.page.keyboard.press('Enter');
+  await wait(500);
+  t.check("asks for fabric (can't tell from a photo)", await t.visible('[data-pick="fabric"]'));
+  await t.click('[data-pick="fabric"][data-value="Chiffon"]');
+  t.check('asks for designer', await t.visible('[data-pick="designer"]'));
+  await t.click('[data-pick="designer"][data-value="mehrbano"]');
+  t.check('draft card shown', await t.visible('.draft'));
+  t.check('card echoes the typed price', (await t.text('.draft-typed')).includes('Rs 12,500'));
+  const rows = await t.page.$$eval('.draft-prices tr', (trs) => trs.map((tr) => tr.textContent));
+  t.check('regional prices listed (7 regions)', rows.length === 7 && rows[0].includes('Rs 12,500') && rows.slice(1).every((r) => r.includes('$')), rows.join(' | '));
+  const title = await t.text('.draft-title');
+  await t.click('[data-draft="approve"]');
+  t.check('publish confirmed', (await t.text('[data-chat-log]')).includes('Published in Formals'));
+  await t.go('#/shop/formals');
+  t.check('new product appears in Formals', (await t.count('.grid .card')) === 5);
+  t.check('it is listed first with its title', (await t.text('.grid .card .card-name')) === title, title);
+  await t.click('.grid .card');
+  t.check('product page shows the uploaded photo', await t.page.$eval('.gallery-main img', (i) => i.src.startsWith('data:image/jpeg') && i.naturalWidth === 768));
+  await t.page.reload({ waitUntil: 'networkidle0' });
+  await t.go('#/shop/formals');
+  t.check('product still there after reload (saved on device)', (await t.count('.grid .card')) === 5);
+
+  await t.go('#/admin');
+  t.check('PIN remembered on this device', await t.visible('[data-chat-log]'));
+  t.check('greeting counts published products', (await t.text('[data-chat-log]')).includes("You've published 1 product"));
+
+  // Path 2: price, category and fabric first, then the photo; edit the price; reject
+  await t.page.type('[data-text]', 'Rs 8,000 pret lawn');
+  await t.page.keyboard.press('Enter');
+  await wait(400);
+  t.check('asks for the photo when it is missing', (await t.text('[data-chat-log]')).includes('Send the photo too'));
+  await (await t.page.$('[data-file]')).uploadFile(photo);
+  await t.page.waitForSelector('.msg:last-child [data-pick="designer"]', { visible: true, timeout: 8000 });
+  t.check('skips questions already answered (only designer asked)', !(await t.page.$('.msg:last-child [data-pick="fabric"]')));
+  await t.click('.msg:last-child [data-pick="designer"][data-value="ranghar"]');
+  t.check('second draft shows Rs 8,000', (await t.text('.draft-typed')).includes('Rs 8,000'));
+  await t.click('[data-draft="edit"]');
+  await t.page.$eval('#e-price', (i) => { i.value = ''; });
+  await t.page.type('#e-price', 'Rs 8,500');
+  await t.click('[data-draft="save"]');
+  t.check('edit updates the price', (await t.text('.draft-typed')).includes('Rs 8,500'));
+  await t.click('[data-draft="reject"]');
+  t.check('reject discards the draft', (await t.text('[data-chat-log]')).includes('Discarded'));
+  await t.go('#/shop/pret');
+  t.check('rejected product not in the store', (await t.count('.grid .card')) === 4);
+
+  // Undo the published product from the chat
+  await t.go('#/admin');
+  await t.click('[data-list]');
+  t.check('lists what was published', (await t.count('.pub-item')) === 1);
+  await t.click('.pub-item [data-undo]');
+  t.check('undo confirmed', (await t.text('[data-chat-log]')).includes('Removed from the store'));
+  await t.go('#/shop/formals');
+  t.check('undone product gone from Formals', (await t.count('.grid .card')) === 4);
+});
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) { console.log(failures.map((f) => ` - ${f}`).join('\n')); process.exit(1); }

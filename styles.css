@@ -485,3 +485,55 @@ html.sheet-open, html.sheet-open body { overflow: hidden; }
   .wordmark { font-size: 1.5rem; }
   .icon-btn { padding: 0 .375rem; }
 }
+
+/* ---------- Admin chat (demo) ---------- */
+body.admin-mode .site-footer, body.admin-mode .feedback-fab { display: none; }
+.pin-card { max-width: 22rem; margin: 3rem auto; display: grid; gap: 1rem; }
+.pin-card h1 { font-size: 2.25rem; }
+.pin-card p { margin: 0; }
+.pin-card .err { color: var(--kattha); font-size: .9375rem; }
+.admin { max-width: 46rem; margin: 0 auto; }
+.admin-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 1.25rem; padding-bottom: .75rem; border-bottom: 1px solid var(--mist); }
+.admin-head h1 { font-size: 1.75rem; }
+.admin-head .text-link { white-space: nowrap; flex: none; }
+.admin-head p { margin: .2rem 0 0; }
+.chat-log { display: flex; flex-direction: column; gap: .75rem; padding-top: 1rem; padding-bottom: calc(6rem + env(safe-area-inset-bottom)); }
+.msg { max-width: 86%; padding: .7rem .9rem; border-radius: 16px; font-size: .9375rem; line-height: 1.45; overflow-wrap: anywhere; }
+.msg.agent { align-self: flex-start; background: var(--paper); border: 1px solid var(--mist); border-bottom-left-radius: 4px; }
+.msg.admin { align-self: flex-end; background: var(--kattha); color: #fff; border-bottom-right-radius: 4px; }
+.msg.admin img { width: 11rem; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
+.msg.admin:has(img) { padding: .35rem; }
+.msg .quick { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .7rem; }
+.msg .quick .chip { min-height: 44px; }
+.msg.card-msg { max-width: 100%; width: min(100%, 30rem); padding: 0; overflow: hidden; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; color: var(--ink-soft); }
+.steps li.done { color: var(--pista); }
+.draft-img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--tile); }
+.draft-body { padding: 1rem; display: grid; gap: .75rem; }
+.draft-kicker { margin: 0; font-size: .8125rem; color: var(--zari); }
+.draft-title { font-size: 1.5rem; }
+.draft-desc { margin: 0; color: var(--ink-soft); }
+.draft-facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem 1rem; font-size: .875rem; }
+.draft-facts dt { color: var(--ink-soft); }
+.draft-facts dd { margin: 0; font-weight: 500; display: flex; align-items: center; gap: .4rem; }
+.draft-facts .sw { width: .9rem; height: .9rem; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); }
+.draft-typed { margin: 0; padding: .5rem .75rem; background: var(--ivory); border-radius: var(--radius); font-size: .9375rem; }
+.draft-prices { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.draft-prices caption { text-align: left; font-weight: 500; padding-bottom: .35rem; }
+.draft-prices th, .draft-prices td { text-align: left; padding: .35rem 0; border-bottom: 1px solid var(--mist); font-weight: 400; }
+.draft-prices td { text-align: right; }
+.draft-warn { margin: 0; color: var(--kattha); font-size: .875rem; }
+.draft-done { margin: 0; color: var(--pista); font-weight: 500; }
+.draft-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.draft-actions .btn { flex: 1 1 auto; }
+.composer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 16; background: var(--paper); border-top: 1px solid var(--mist); padding: .6rem 0 calc(.6rem + env(safe-area-inset-bottom)); }
+.composer-inner { max-width: 46rem; margin: 0 auto; display: flex; align-items: center; gap: .5rem; padding: 0 max(var(--gutter), env(safe-area-inset-left)); }
+.composer input[type="text"] { flex: 1; min-width: 0; min-height: 44px; padding: 0 1rem; font-size: 16px; border: 1px solid #CFC3BE; border-radius: 22px; background: var(--ivory); }
+.composer input[type="text"]:focus { outline: 2px solid var(--kattha); outline-offset: 0; }
+.composer .attach, .composer .send { flex: none; width: 44px; border-radius: 50%; }
+.composer .send { background: var(--kattha); color: #fff; }
+.composer .send:hover { background: var(--kattha-deep); }
+.pub-item { display: grid; grid-template-columns: 3rem 1fr auto; gap: .75rem; align-items: center; padding: .6rem 0; border-top: 1px solid var(--mist); margin-top: .6rem; }
+.pub-item img { width: 3rem; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 4px; }
+.pub-item a { text-decoration: none; font-weight: 500; }
+.pub-item small { display: block; color: var(--ink-soft); }

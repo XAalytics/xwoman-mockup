@@ -124,6 +124,25 @@ for (const [name, engine] of PHONES) {
     await wait(400);
     check('menu closes', (await page.locator('.sheet').count()) === 0);
 
+    // Admin chat on a phone: PIN, photo from the phone, price + category, approve
+    await page.goto(BASE + '#/admin', { waitUntil: 'networkidle' });
+    await page.locator('#pin').fill('2026');
+    await tap('[data-pin] .btn');
+    await layout('admin chat');
+    const comp = await page.locator('.composer').boundingBox();
+    check('chat composer sits at the bottom of the screen', comp && Math.abs(comp.y + comp.height - vh) <= 2, comp ? `${Math.round(comp.y + comp.height)} vs ${vh}` : 'missing');
+    await page.locator('[data-file]').setInputFiles('img/p05.webp');
+    await page.waitForFunction(() => document.querySelector('[data-chat-log]').textContent.includes('What is the price'), null, { timeout: 10000 });
+    await page.locator('[data-text]').fill('Rs 12,500 formals');
+    await page.locator('[data-text]').press('Enter');
+    await wait(500);
+    await tap('[data-pick="fabric"][data-value="Chiffon"]');
+    await tap('[data-pick="designer"][data-value="saira"]');
+    await layout('admin draft card');
+    await shot('6-admin');
+    await tap('[data-draft="approve"]');
+    check('admin publishes from a phone', (await page.locator('[data-chat-log]').textContent()).includes('Published in Formals'));
+
     const manifest = await page.evaluate(async () => (await fetch('manifest.webmanifest')).json());
     const icons = await page.evaluate(async (list) => Promise.all(list.map(async (u) => (await fetch(u)).ok)), ['img/icon-180.png', ...manifest.icons.map((i) => i.src)]);
     check('home-screen app manifest and icons load', manifest.display === 'standalone' && icons.every(Boolean));

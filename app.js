@@ -24,6 +24,8 @@
     screen: 'Home',
   };
 
+  store.get('xw-admin-products', []).forEach((p) => PRODUCTS.unshift(p));
+
   function guessRegion() {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
     if (tz === 'Asia/Karachi') return 'PK';
@@ -94,7 +96,9 @@
     const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     return 0.299 * r + 0.587 * g + 0.114 * b > 170;
   }
-  const productImg = (p, i = 0, opts = {}) => img(p.images[i], `${p.name} by ${DESIGNERS[p.designer].name}`, { name: p.name, swatch: p.swatch, ...opts });
+  const productImg = (p, i = 0, opts = {}) => (p.imageData && i === 0
+    ? `<img src="${p.imageData}" alt="${esc(`${p.name} by ${DESIGNERS[p.designer].name}`)}" decoding="async" width="768" height="960">`
+    : img(p.images[i], `${p.name} by ${DESIGNERS[p.designer].name}`, { name: p.name, swatch: p.swatch, ...opts }));
 
   function toast(msg) {
     const t = $('.toast');
@@ -859,8 +863,10 @@
     else if (parts[0] === 'checkout') viewCheckout();
     else if (parts[0] === 'confirmed') viewConfirmed();
     else if (parts[0] === 'track') viewTrack(params);
+    else if (parts[0] === 'admin' && window.XWAdmin) { state.screen = 'Admin chat'; window.XWAdmin.render({ store, money, priceIn, esc, toast }); }
     else viewNotFound();
     lastPath = path;
+    document.body.classList.toggle('admin-mode', parts[0] === 'admin');
     renderHeader();
     if (scroll) { window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
   }
