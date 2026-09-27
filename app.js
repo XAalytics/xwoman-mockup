@@ -681,7 +681,7 @@
     sheet.innerHTML = `<div class="sheet-head"><h2>${title}</h2><button class="icon-btn" type="button" data-close aria-label="Close">${icons.close}</button></div>
       <div class="sheet-body">${body}</div>${foot ? `<div class="sheet-foot">${foot}</div>` : ''}`;
     document.body.append(scrim, sheet);
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('sheet-open'); // locks background scroll, incl. iOS Safari
     requestAnimationFrame(() => { scrim.classList.add('show'); sheet.classList.add('show'); });
     scrim.addEventListener('click', () => closeSheet());
     $$('[data-close]', sheet).forEach((b) => b.addEventListener('click', () => closeSheet()));
@@ -694,7 +694,7 @@
     const done = () => { sheet.remove(); scrim?.remove(); };
     if (immediate) done();
     else { sheet.classList.remove('show'); scrim?.classList.remove('show'); setTimeout(done, 280); }
-    document.body.style.overflow = '';
+    document.documentElement.classList.remove('sheet-open');
     if (!immediate) { sheetReturnFocus?.focus?.({ preventScroll: true }); sheetReturnFocus = null; }
   }
   document.addEventListener('keydown', (e) => {
@@ -864,6 +864,6 @@
     renderHeader();
     if (scroll) { window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
   }
-  window.addEventListener('hashchange', () => { closeSheet(true); document.body.style.overflow = ''; route(); });
+  window.addEventListener('hashchange', () => { closeSheet(true); document.documentElement.classList.remove('sheet-open'); route(); });
   route();
 })();

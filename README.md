@@ -49,6 +49,21 @@ npm run e2e                          # against the live site
 
 63 checks across 8 journeys: browse, filter, sort, product page, bag, sticky bar, card and cash-on-delivery checkout, confirmation, tracking, region switch, feedback, and blocked browser storage.
 
+Phones (iPhone and Android):
+
+```bash
+npx playwright install webkit        # once: WebKit is the engine behind every iPhone browser
+npm run e2e:mobile                   # iPhone SE / 15 / 15 Pro Max (WebKit) and Pixel 7 / Galaxy S24 (Chrome)
+```
+
+Real touch taps through the full journey, plus layout checks on every screen: no sideways scrolling, touch targets of at least 44px, form fields of at least 16px (so iOS doesn't zoom), Checkout and Pay buttons fully on screen, sticky bar and feedback button placement, and the home-screen app manifest and icons.
+
+## On phones
+
+- Works in Safari and Chrome on iPhone and Android, from 320px-wide screens up.
+- Respects the iPhone notch and home indicator (safe areas), and Safari's collapsing toolbar (`dvh`).
+- **Add to Home Screen** gives an app icon and opens full screen (web app manifest + Apple touch icon).
+
 ## Files
 
 | File | Purpose |

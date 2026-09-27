@@ -70,9 +70,11 @@ button, input, select { font: inherit; color: inherit; }
 .icon-btn svg { flex: none; width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.4; }
 .region-btn { font-size: .875rem; white-space: nowrap; }
 @media (max-width: 479px) { .region-btn .cur { display: none; } }
-.bag-count {
-  min-width: 1.25rem; height: 1.25rem; padding: 0 .3rem; border-radius: 99px;
-  background: var(--kattha); color: #fff; font-size: .75rem; line-height: 1.25rem; text-align: center;
+.bag-btn { position: relative; }
+.bag-count { /* sits on the bag's corner so the header never widens */
+  position: absolute; top: 4px; right: 2px;
+  min-width: 1.125rem; height: 1.125rem; padding: 0 .28rem; border-radius: 99px;
+  background: var(--kattha); color: #fff; font-size: .6875rem; line-height: 1.125rem; text-align: center;
 }
 .main-nav { display: none; }
 .main-nav a {
@@ -449,3 +451,55 @@ body.bar-visible .toast { bottom: 5.5rem; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* ---------- Phones (iPhone and Android) ---------- */
+a, button, input, select, label { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.mock-banner .short { display: none; }
+@media (max-width: 599px) {
+  /* one slim line instead of three, so products start higher on small screens */
+  .mock-banner { flex-wrap: nowrap; justify-content: space-between; padding-top: .35rem; padding-bottom: .35rem; font-size: .8125rem; }
+  .mock-banner .long { display: none; }
+  .mock-banner .short { display: inline; }
+  .mock-banner button { position: relative; flex: none; min-height: 32px; }
+  .mock-banner button::after { content: ''; position: absolute; inset: -6px -4px; } /* 44px touch area */
+  .header-inner { padding-top: .375rem; padding-bottom: .375rem; }
+}
+/* 44px minimum touch targets for small links */
+.wordmark, .text-link, .pdp-designer, .size-head button { display: inline-flex; align-items: center; min-height: 44px; }
+.checkout .option .text-link { min-height: 44px; padding: 0 .25rem; }
+@media (pointer: coarse) { .chip { min-height: 44px; } .size { min-height: 48px; min-width: 3.25rem; } }
+/* iOS zooms into inputs smaller than 16px */
+.field input, .field select, .toolbar select { font-size: 16px; }
+/* notch, rounded corners and home indicator */
+.mock-banner, .header-inner, .wrap, .sheet-head, .sheet-body, .sheet-foot {
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+.sticky-bar { padding-bottom: calc(.75rem + env(safe-area-inset-bottom)); padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
+.feedback-fab { bottom: calc(1rem + env(safe-area-inset-bottom)); left: max(var(--gutter), env(safe-area-inset-left)); }
+body.bar-visible .feedback-fab { bottom: calc(5.25rem + env(safe-area-inset-bottom)); }
+.toast { bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
+body.bar-visible .toast { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+.sheet-foot, .sheet:not(:has(.sheet-foot)) .sheet-body { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+/* Safari's collapsing toolbar: size panels to the visible screen */
+.sheet { max-height: 88dvh; }
+.sheet.side { height: 100vh; height: 100dvh; bottom: auto; }
+.sheet-body { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+html.sheet-open, html.sheet-open body { overflow: hidden; }
+/* horizontal rows scroll by swipe without a scrollbar */
+.chips, .cat-row { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar, .cat-row::-webkit-scrollbar { display: none; }
+/* hover effects only where there is a real pointer, so they don't stick after a tap */
+@media (hover: none) {
+  .card:hover .card-img img { transform: none; }
+  .btn:hover { background: var(--kattha); }
+  .btn-ghost:hover, .icon-btn:hover, .mock-banner button:hover { background: transparent; }
+}
+
+/* very small phones (iPhone SE 1st gen, small Androids) */
+@media (max-width: 359px) {
+  .header-inner { gap: .5rem; }
+  .wordmark { font-size: 1.5rem; }
+  .icon-btn { padding: 0 .375rem; }
+}
+@media (max-width: 400px) { .mock-banner .extra { display: none; } }
