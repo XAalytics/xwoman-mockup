@@ -1,6 +1,6 @@
 """Build the site's product images: 4:5 WebP at 768x960 and 400x500, plus img/manifest.js.
-Source (env IMG_SOURCE): art (default) = Claude-drawn illustrations in img/art/*.png (tools/illustrate.mjs)
-                         photos         = AI photos in img/raw/*.jpg (tools/gen_images.py)
+Source (env IMG_SOURCE): photos (default) = AI-generated model photos in img/raw/*.jpg (tools/gen_images.py)
+                         art              = Claude-drawn illustrations in img/art/*.png (tools/illustrate.mjs)
 Usage: python tools/build_images.py"""
 import os
 import pathlib
@@ -8,7 +8,7 @@ from PIL import Image, ImageOps
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / 'img'
-SOURCE = os.environ.get('IMG_SOURCE', 'art')
+SOURCE = os.environ.get('IMG_SOURCE', 'photos')
 SRC_DIR, PATTERN = (OUT / 'art', '*.png') if SOURCE == 'art' else (OUT / 'raw', '*.jpg')
 
 sources = sorted(SRC_DIR.glob(PATTERN))

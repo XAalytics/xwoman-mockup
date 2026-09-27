@@ -16,7 +16,7 @@ It is a static site (HTML, CSS, vanilla JavaScript): no build step, no backend. 
 ## Content notes
 
 - Designer names are fictional. Prices, duties and delivery times are illustrative.
-- Product images are fashion illustrations drawn in code by Claude (`tools/illustrate.mjs`). AI photos can be swapped back in with `IMG_SOURCE=photos`.
+- Product photos are AI-generated models (FLUX.1 [dev]); no real people or real designers' garments are shown. Claude-drawn illustrations remain available with `IMG_SOURCE=art`.
 - The page asks search engines not to index it.
 
 ## Run locally
@@ -28,21 +28,15 @@ python -m http.server 8765
 
 ## Regenerate product images
 
-Illustrations (default): each product's look is described in `LOOKS` inside `tools/illustrate.mjs`.
+AI model photos (default): each shot is described in `tools/shots.json`.
 
 ```bash
-npm install
-node tools/illustrate.mjs            # draws img/art/*.svg and *.png
-python tools/build_images.py         # converts to WebP and updates img/manifest.js
+IMG_PROVIDER=space python tools/gen_images.py   # free FLUX.1-dev Hugging Face Space (daily quota; ~/.hf_key.txt)
+python tools/gen_images.py                      # or fal.ai directly (~/.fal_key.txt)
+python tools/build_images.py                    # converts img/raw/*.jpg to WebP and updates img/manifest.js
 ```
 
-AI photos (optional; shots in `tools/shots.json`):
-
-```bash
-python tools/gen_images.py            # generates any missing shots (fal.ai key in ~/.fal_key.txt)
-IMG_PROVIDER=hf python tools/gen_images.py   # or via the Hugging Face router (~/.hf_key.txt)
-IMG_SOURCE=photos python tools/build_images.py   # converts img/raw/*.jpg to WebP
-```
+Illustrations (alternative): `node tools/illustrate.mjs && IMG_SOURCE=art python tools/build_images.py`.
 
 ## End-to-end tests
 
