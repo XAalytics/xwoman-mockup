@@ -38,19 +38,17 @@ for (const [name, engine] of PHONES) {
     const r = await page.evaluate(() => {
       const vw = document.documentElement.clientWidth;
       const textInputs = [...document.querySelectorAll('input:not([type=radio]):not([type=checkbox]), select')].filter((el) => el.offsetParent);
-      const keyTargets = [...document.querySelectorAll('.site-header .icon-btn, .btn, .chip, .size, .size-head button, .text-link, .pdp-designer, .mock-banner button')]
+      const keyTargets = [...document.querySelectorAll('.site-header .icon-btn, .btn, .chip, .size, .size-head button, .text-link, .pdp-designer')]
         .filter((el) => el.offsetParent && getComputedStyle(el).visibility !== 'hidden');
       const tooSmall = keyTargets.filter((el) => {
         const b = el.getBoundingClientRect();
-        // banner button: 32px tall with a transparent ::after extending the touch area to 44px
-        const extra = el.closest('.mock-banner') ? 12 : 0;
-        return b.height + extra < 44 - 0.5;
+        return b.height < 44 - 0.5;
       }).map((el) => `${(el.textContent || el.getAttribute('aria-label') || el.className).trim().slice(0, 16)}:${Math.round(el.getBoundingClientRect().height)}`);
       return {
         overflow: document.documentElement.scrollWidth - vw,
         smallInputs: textInputs.filter((el) => parseFloat(getComputedStyle(el).fontSize) < 16).length,
         tooSmall,
-        chrome: Math.round(document.querySelector('.mock-banner').getBoundingClientRect().height + document.querySelector('.site-header').getBoundingClientRect().height),
+        chrome: Math.round(document.querySelector('.site-header').getBoundingClientRect().height),
       };
     });
     check(`${screen}: no sideways scrolling`, r.overflow <= 0, `${r.overflow}px`);
@@ -63,7 +61,7 @@ for (const [name, engine] of PHONES) {
   try {
     await page.goto(BASE + '#/', { waitUntil: 'networkidle' });
     const home = await layout('home');
-    check('banner + header use ≤ 110px', home.chrome <= 110, `${home.chrome}px`);
+    check('header uses ≤ 70px', home.chrome <= 70, `${home.chrome}px`);
     check('hero photo loads', await page.locator('.hero-art img').evaluate((i) => i.complete && i.naturalWidth > 0));
     await shot('1-home');
 

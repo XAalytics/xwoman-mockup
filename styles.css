@@ -32,18 +32,6 @@ button, input, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--kattha); outline-offset: 3px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- Mockup banner ---------- */
-.mock-banner {
-  display: flex; align-items: center; justify-content: center; gap: .75rem; flex-wrap: wrap;
-  padding: .5rem var(--gutter);
-  background: var(--kattha-deep); color: #F3E7E3; font-size: .875rem;
-}
-.mock-banner button {
-  border: 1px solid rgba(243, 231, 227, .5); background: transparent; color: inherit;
-  padding: .2rem .75rem; border-radius: 99px; cursor: pointer; font-size: .8125rem;
-}
-.mock-banner button:hover { background: rgba(255, 255, 255, .1); }
-
 /* ---------- Header ---------- */
 .site-header {
   position: sticky; top: 0; z-index: 20;
@@ -426,6 +414,8 @@ details > div { padding: 0 0 1rem; color: var(--ink-soft); font-size: .9375rem; 
 .footer-grid ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
 .footer-grid button, .footer-grid a { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; font-size: .9375rem; color: var(--ink-soft); text-align: left; }
 .footer-grid button:hover, .footer-grid a:hover { color: var(--kattha); }
+.powered { margin: 2rem 0 0; padding-top: 1rem; border-top: 1px solid var(--mist); font-size: .875rem; color: var(--ink-soft); }
+.powered a { display: inline-flex; align-items: center; min-height: 44px; color: var(--kattha); font-weight: 500; text-underline-offset: 3px; }
 
 /* ---------- Feedback button & toast ---------- */
 .feedback-fab {
@@ -454,14 +444,7 @@ body.bar-visible .toast { bottom: 5.5rem; }
 
 /* ---------- Phones (iPhone and Android) ---------- */
 a, button, input, select, label { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-.mock-banner .short { display: none; }
 @media (max-width: 599px) {
-  /* one slim line instead of three, so products start higher on small screens */
-  .mock-banner { flex-wrap: nowrap; justify-content: space-between; padding-top: .35rem; padding-bottom: .35rem; font-size: .8125rem; }
-  .mock-banner .long { display: none; }
-  .mock-banner .short { display: inline; }
-  .mock-banner button { position: relative; flex: none; min-height: 32px; }
-  .mock-banner button::after { content: ''; position: absolute; inset: -6px -4px; } /* 44px touch area */
   .header-inner { padding-top: .375rem; padding-bottom: .375rem; }
 }
 /* 44px minimum touch targets for small links */
@@ -471,7 +454,7 @@ a, button, input, select, label { -webkit-tap-highlight-color: transparent; touc
 /* iOS zooms into inputs smaller than 16px */
 .field input, .field select, .toolbar select { font-size: 16px; }
 /* notch, rounded corners and home indicator */
-.mock-banner, .header-inner, .wrap, .sheet-head, .sheet-body, .sheet-foot {
+.header-inner, .wrap, .sheet-head, .sheet-body, .sheet-foot {
   padding-left: max(var(--gutter), env(safe-area-inset-left));
   padding-right: max(var(--gutter), env(safe-area-inset-right));
 }
@@ -493,7 +476,7 @@ html.sheet-open, html.sheet-open body { overflow: hidden; }
 @media (hover: none) {
   .card:hover .card-img img { transform: none; }
   .btn:hover { background: var(--kattha); }
-  .btn-ghost:hover, .icon-btn:hover, .mock-banner button:hover { background: transparent; }
+  .btn-ghost:hover, .icon-btn:hover { background: transparent; }
 }
 
 /* very small phones (iPhone SE 1st gen, small Androids) */
@@ -502,4 +485,3 @@ html.sheet-open, html.sheet-open body { overflow: hidden; }
   .wordmark { font-size: 1.5rem; }
   .icon-btn { padding: 0 .375rem; }
 }
-@media (max-width: 400px) { .mock-banner .extra { display: none; } }

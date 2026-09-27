@@ -11,7 +11,7 @@ It is a static site (HTML, CSS, vanilla JavaScript): no build step, no backend. 
 - Home, category listings with filters and sorting, product pages (gallery, size guide, pieces and fabric, dispatch and delivery dates)
 - Switching the delivery country (Pakistan, US, UK, Canada, Australia, UAE & Gulf, rest of world) to see prices in PKR or USD, duties-included vs payable-on-delivery messages, and cash on delivery for Pakistan
 - Bag, single-page guest checkout (no account), simulated card payment, order confirmation, and order tracking by order number + email
-- **Share feedback** (banner and floating button) opens WhatsApp with a short prefilled question list and the screen the tester was on
+- **Share feedback** (floating button) opens WhatsApp with a short prefilled question list and the screen the tester was on
 
 ## Content notes
 
@@ -47,7 +47,7 @@ BASE=http://127.0.0.1:8765/ npm run e2e
 npm run e2e                          # against the live site
 ```
 
-63 checks across 8 journeys: browse, filter, sort, product page, bag, sticky bar, card and cash-on-delivery checkout, confirmation, tracking, region switch, feedback, and blocked browser storage.
+65 checks across 8 journeys: browse, filter, sort, product page, bag, sticky bar, card and cash-on-delivery checkout, confirmation, tracking, region switch, feedback, and blocked browser storage.
 
 Phones (iPhone and Android):
 

@@ -71,6 +71,9 @@ await session('Home and navigation (phone)', PHONE, async (t) => {
   t.check('4 category tiles', (await t.count('.cat-tile')) === 4);
   t.check('8 products in New in', (await t.count('.grid .card')) === 8);
   t.check('header shows the region', (await t.text('[data-region-code]')).startsWith('UK'));
+  const powered = await t.page.$eval('.powered', (p) => ({ text: p.textContent.trim(), href: p.querySelector('a').href, target: p.querySelector('a').target }));
+  t.check('footer says Powered by XAalytics.com and links to it', powered.text === 'Powered by XAalytics.com' && powered.href === 'https://xaalytics.com/' && powered.target === '_blank', JSON.stringify(powered));
+  t.check('no preview banner at the top', !(await t.page.$('.mock-banner')));
   await t.click('[data-action="menu"]');
   t.check('menu opens', await t.visible('.sheet.show .nav-list'));
   await t.click('.nav-list a[href="#/shop/pret"]');
